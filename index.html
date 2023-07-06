@@ -379,6 +379,9 @@
                         if (errors[field.name]) {
                             field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = errors[field.name][0];
                             field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.add('invalid');
+                        } else {
+                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = '';
+                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.remove('invalid');
                         }
                     });
                 })
