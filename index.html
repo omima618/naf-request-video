@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/css/intlTelInput.css">
+
+    <style>
+        .request-video-btn {
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+            width: 80%;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0 auto 15px;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+            background-color: #e0a203;
+            border: 1px solid #e0a203;
+            outline: none !important;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .request-video-btn:hover {
+            background-color: #fff;
+            color: #e0a203;
+        }
+
+        .request-video-popup {
+            overflow: auto !important;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 160001600;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            padding: 20px 0;
+        }
+
+        .request-video-popup,
+        .request-video-popup * {
+            box-sizing: border-box;
+        }
+
+        .request-video-popup.is-active {
+            display: flex !important;
+        }
+
+        .popup-overlay {
+            width: 100%;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            background-color: #000000;
+            opacity: 0.6;
+        }
+
+        .request-video-popup-form {
+            position: relative;
+            margin: auto 0;
+            width: calc(100% - 20px);
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        .request-video-popup.is-active .request-video-popup-form.fade-up {
+            animation: 0.5s fadeUp ease-in-out;
+        }
+
+        .request-video-popup.is-active .request-video-popup-form.fade-down {
+            animation: 0.5s fadeDown ease-in-out;
+        }
+
+        .request-video-popup-form form.hide {
+            display: none !important;
+        }
+
+        .request-video-popup-form .request-video-title {
+            font-size: 20px;
+            font-weight: 800 !important;
+            text-align: center;
+            color: #e0a203;
+            margin: 10px auto 5px;
+        }
+
+        .request-video-popup-form .request-video-desc {
+            font-size: 14px;
+            text-align: center;
+            color: #363636;
+            margin: 5px auto 25px;
+        }
+
+        .request-video-popup-form .popup-validation-msg {
+            font-size: 12px;
+            font-weight: 300 !important;
+            margin: 5px 0;
+            color: #e50404;
+            display: none !important;
+        }
+
+        .request-video-popup-form .popup-validation-msg.invalid {
+            display: block !important;
+        }
+
+        .request-video-popup-form .inp-wrapper {
+            display: flex;
+            flex-direction: column;
+            row-gap: 5px;
+            margin: 15px 0;
+        }
+
+        .request-video-popup-form .inp-wrapper label {
+            color: #363636;
+            font-size: 13px;
+            margin-bottom: 0 !important;
+        }
+
+        .request-video-popup-form .inp-wrapper input {
+            width: 100%;
+            height: 40px;
+            color: #363636;
+            font-size: 13px;
+            padding: 0 10px;
+            border: 1px solid #c4c4c4;
+            outline: none;
+            border-radius: 7.5px;
+        }
+
+        .request-video-popup-form ::placeholder {
+            overflow: visible;
+            font-size: 12px;
+        }
+
+        .request-video-popup-form .submit-request-video-form {
+            cursor: pointer;
+            display: block;
+            width: fit-content;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 20px auto 10px;
+            padding: 8px 30px;
+            text-align: center;
+            color: #fff;
+            background-color: #e0a203;
+            border: none !important;
+            border-radius: 7.5px;
+            transition: 0.3s;
+        }
+
+        .request-video-popup-form .submit-request-video-form:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .request-video-popup-form .submit-request-video-form:hover {
+            background-color: #3a3d2c;
+        }
+
+        .request-video-popup .done-message-container {
+            display: none;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .request-video-popup .done-message-container .done-message {
+            margin: 0 auto 20px;
+            font-size: 15px;
+            text-align: center;
+            color: #3a3d2c;
+        }
+
+        .request-video-popup .done-message-container.show {
+            display: block;
+        }
+
+        .request-video-popup .close-request-video-popup {
+            cursor: pointer;
+            display: block;
+            width: fit-content;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 auto;
+            padding: 10px 30px;
+            text-align: center;
+            color: #fff;
+            background-color: #3a3d2c;
+            border: none !important;
+            outline: none !important;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .request-video-popup .close-request-video-popup:hover {
+            background-color: #e0a203;
+        }
+
+        .request-video-popup-form .phone-inp-wrapper input {
+            padding-right: 10px !important;
+            text-align: start !important;
+        }
+
+        .request-video-popup-form .phone-inp-wrapper input::placeholder {
+            text-align: start !important;
+        }
+
+        .request-video-popup-form .iti {
+            width: 100%;
+        }
+
+        .request-video-popup-form .iti__country-list {
+            left: 0 !important;
+            width: fit-content;
+            max-width: calc(100vw - 89px);
+            min-width: 250px;
+        }
+
+        .request-video-popup-form .iti--separate-dial-code .iti__selected-dial-code {
+            margin-left: 0;
+            direction: ltr;
+        }
+
+        .request-video-popup-form .iti--separate-dial-code .iti__selected-flag {
+            background-color: #fff;
+            border-right: 1px solid #d9d9d9;
+            border-radius: 7.5px 0 0 7.5px;
+        }
+
+        .request-video-popup-form .iti__selected-flag {
+            flex-direction: row-reverse;
+            gap: 5px;
+        }
+
+        .request-video-popup-form .iti__arrow {
+            margin-left: 3px;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #18181A;
+        }
+
+        .request-video-popup-form .iti__arrow--up {
+            border-top: none;
+            border-bottom: 5px solid #18181A;
+        }
+
+        .request-video-popup-form .iti__country.iti__highlight {
+            unicode-bidi: plaintext;
+        }
+
+        [dir=rtl] .iti--allow-dropdown .iti__flag-container,
+        [dir=rtl] .iti--separate-dial-code .iti__flag-container {
+            left: 0;
+            right: auto;
+        }
+
+        @keyframes fadeDown {
+            from {
+                transform: translateY(-200%);
+                opacity: 0.2;
+            }
+
+            to {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-200%);
+                opacity: 0.2;
+            }
+        }
+    </style>
+    <style>
+        * {
+            direction: rtl;
+        }
+        #product-view-add-to-cart {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="product-view-add-to-cart">add</button>
+    <div class="request-video-popup">
+        <div class="popup-overlay"></div>
+        <div class="request-video-popup-form">
+            <p class="request-video-title">اطلب فيديو</p>
+            <p class="request-video-desc">هذا النص هو مثال لنص يمكن ان يستبدل</p>
+            <form>
+                <div class="inp-wrapper">
+                    <label for="whatsapp-username">الاسم</label>
+                    <input type="text" id="whatsapp-username" name="name" placeholder="اسم المستخدم" required>
+                    <p class="popup-validation-msg"></p>
+                </div>
+                <div class="inp-wrapper phone-inp-wrapper">
+                    <label for="whatsapp-number">رقم الجوال</label>
+                    <input type="tel" id="whatsapp-number" name="phone" placeholder="رقم الجوال المربوط بالواتس اب" required>
+                    <p class="popup-validation-msg"></p>
+                </div>
+                <button type="submit" class="submit-request-video-form">تأكيد</button>
+            </form>
+            <div class="done-message-container">
+                <p class="done-message">
+                    تم إستلام بياناتك بنجاح سنقوم بمراسلتك علي الواتساب.
+                </p>
+                <button class="close-request-video-popup">متابعة التسوق</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/js/intlTelInput.min.js"></script>
+    <script>
+        var addToCartButton = document.querySelector("#product-view-add-to-cart");
+        function toggleRequestVideoPopup() {
+            if (document.querySelector(".request-video-popup").classList.contains("is-active")) {
+                document.querySelector(".request-video-popup-form").classList.remove("fade-down");
+                document.querySelector(".request-video-popup-form").classList.add("fade-up");
+                setTimeout(function () {
+                    document.querySelector(".request-video-popup").classList.remove("is-active");
+                    document.querySelector(".request-video-popup-form form").classList.remove("hide");
+                    document.querySelector(".request-video-popup-form form").reset();
+                    document.querySelector(".request-video-popup-form .done-message-container").classList.remove("show");
+                    document.body.style.overflow = "initial";
+                }, 450);
+            } else {
+                document.body.style.overflow = "hidden";
+                document.querySelector(".request-video-popup-form").classList.remove("fade-up");
+                document.querySelector(".request-video-popup-form").classList.add("fade-down");
+                document.querySelector(".request-video-popup").classList.add("is-active");
+            }
+        }
+
+        function productVideoRequest(submitBtn, url, data) {
+            submitBtn.disabled = true;
+            var options = {
+                method: "POST",
+                headers: {
+                    'content-type': 'application/json',
+                    accept: 'application/json',
+                },
+                body: JSON.stringify(data),
+            };
+            var fetchRes = fetch(url, options);
+            fetchRes
+                .then(function (res) {
+                    return res.json();
+                })
+                .then(function (data) {
+                    if(data.status) {
+                        document.querySelector(".request-video-popup-form form").classList.add("hide");
+                        document.querySelector(".request-video-popup-form .done-message-container").classList.add("show");
+                    } else {
+                        throw Error(JSON.stringify(data.errors));
+                    }
+                })
+                .catch(function (error) {
+                    var errors = JSON.parse(error.message);
+                    var formFields = Array.from(document.querySelectorAll('.request-video-popup-form form [name]'));
+                    formFields.forEach(function (field) {
+                        if (errors[field.name]) {
+                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = errors[field.name][0];
+                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.add('invalid');
+                        }
+                    });
+                })
+                .finally(function () {
+                    submitBtn.disabled = false;
+                });
+        }
+
+        if (addToCartButton) {
+            var requestVideoBtn = document.createElement("button");
+            requestVideoBtn.classList.add("request-video-btn");
+            requestVideoBtn.innerHTML = "اطلب فيديو";
+            addToCartButton.after(requestVideoBtn);
+
+            [
+                document.querySelector(".request-video-popup .popup-overlay"),
+                document.querySelector(".request-video-btn"),
+                document.querySelector('.done-message-container .close-request-video-popup')
+            ].forEach(function (element) {
+                element.addEventListener("click", function () {
+                    toggleRequestVideoPopup();
+                });
+            });
+
+            var whatsappNumberInput = document.querySelector(".request-video-popup-form #whatsapp-number");
+            var whatsappNumberIntlTelInput = window.intlTelInput(whatsappNumberInput, {
+                initialCountry: "sa",
+                preferredCountries: ['sa'],
+                separateDialCode: true,
+                utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/js/utils.min.js',
+            });
+
+
+            document.querySelector(".request-video-popup-form .submit-request-video-form").addEventListener("click", function (e) {
+                e.preventDefault();
+                var requestData = {
+                    name: document.querySelector(".request-video-popup-form #whatsapp-username").value,
+                    phone: document.querySelector(".request-video-popup-form #whatsapp-number").value,
+                    product_id: 'test-product-id',
+                };
+                productVideoRequest(this, 'https://affiliate-emails.valphora.com/api/nafgold/request-video', requestData);
+            });
+        } else {
+            document.querySelector(".request-video-popup").remove();
+        }
+    </script>
+</body>
+
+</html>
