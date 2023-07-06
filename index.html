@@ -339,6 +339,10 @@
                     document.querySelector(".request-video-popup-form form").classList.remove("hide");
                     document.querySelector(".request-video-popup-form form").reset();
                     document.querySelector(".request-video-popup-form .done-message-container").classList.remove("show");
+                    document.querySelectorAll(".request-video-popup-form .popup-validation-msg").forEach(function(msg){
+                        msg.innerHTML = '';
+                        msg.classList.remove('invalid');
+                    });
                     document.body.style.overflow = "initial";
                 }, 450);
             } else {
