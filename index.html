@@ -329,7 +329,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/js/intlTelInput.min.js"></script>
     <script>
-        var addToCartButton = document.querySelector("#product-view-add-to-cart");
+        var RVAddToCartButton = document.querySelector("#product-view-add-to-cart");
         function toggleRequestVideoPopup() {
             if (document.querySelector(".request-video-popup").classList.contains("is-active")) {
                 document.querySelector(".request-video-popup-form").classList.remove("fade-down");
@@ -394,11 +394,11 @@
                 });
         }
 
-        if (addToCartButton) {
-            var requestVideoBtn = document.createElement("button");
-            requestVideoBtn.classList.add("request-video-btn");
-            requestVideoBtn.innerHTML = "اطلب فيديو";
-            addToCartButton.after(requestVideoBtn);
+        if (RVAddToCartButton) {
+            var RVRequestVideoBtn = document.createElement("button");
+            RVRequestVideoBtn.classList.add("request-video-btn");
+            RVRequestVideoBtn.innerHTML = "اطلب فيديو";
+            RVAddToCartButton.after(RVRequestVideoBtn);
 
             [
                 document.querySelector(".request-video-popup .popup-overlay"),
@@ -410,8 +410,8 @@
                 });
             });
 
-            var whatsappNumberInput = document.querySelector(".request-video-popup-form #whatsapp-number");
-            var whatsappNumberIntlTelInput = window.intlTelInput(whatsappNumberInput, {
+            var RVWhatsappNumberInput = document.querySelector(".request-video-popup-form #whatsapp-number");
+            var RVWhatsappNumberIntlTelInput = window.intlTelInput(RVWhatsappNumberInput, {
                 initialCountry: "sa",
                 preferredCountries: ['sa'],
                 separateDialCode: true,
