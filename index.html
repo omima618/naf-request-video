@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/css/intlTelInput.css">
+    
+    <style>
+        * {
+            direction: rtl;
+        }
+        #product-view-add-to-cart {
+            display: none;
+        }
+    </style>
 
     <style>
         .request-video-btn {
@@ -87,6 +96,24 @@
             display: none !important;
         }
 
+        .request-video-popup-form .close-request-video-popup-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            width: 25px;
+            height: 25px;
+            color: #363636;
+            font-size: 14px;
+            border: 0;
+            outline: 0;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+
         .request-video-popup-form .request-video-title {
             font-size: 20px;
             font-weight: 800 !important;
@@ -164,7 +191,7 @@
             cursor: not-allowed;
         }
 
-        .request-video-popup-form .submit-request-video-form:hover {
+        .request-video-popup-form .submit-request-video-form:not(:disabled):hover {
             background-color: #3a3d2c;
         }
 
@@ -288,14 +315,6 @@
             }
         }
     </style>
-    <style>
-        * {
-            direction: rtl;
-        }
-        #product-view-add-to-cart {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
@@ -303,6 +322,7 @@
     <div class="request-video-popup">
         <div class="popup-overlay"></div>
         <div class="request-video-popup-form">
+            <button class="close-request-video-popup-icon">X</button>
             <p class="request-video-title">اطلب فيديو</p>
             <p class="request-video-desc">ادخل بياناتك لطلب فيديو للمنتج</p>
             <form>
@@ -401,9 +421,10 @@
             RVAddToCartButton.after(RVRequestVideoBtn);
 
             [
+                document.querySelector(".request-video-popup .close-request-video-popup-icon"),
                 document.querySelector(".request-video-popup .popup-overlay"),
                 document.querySelector(".request-video-btn"),
-                document.querySelector('.done-message-container .close-request-video-popup')
+                document.querySelector('.request-video-popup .done-message-container .close-request-video-popup')
             ].forEach(function (element) {
                 element.addEventListener("click", function () {
                     toggleRequestVideoPopup();
