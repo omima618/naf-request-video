@@ -129,12 +129,19 @@
             margin: 5px auto 25px;
         }
 
-        .request-video-popup-form .popup-validation-msg {
+        .request-video-popup-form .popup-validation-msg,
+        .request-video-popup-form .rv-error-msg {
             font-size: 12px;
             font-weight: 300 !important;
             margin: 5px 0;
             color: #e50404;
             display: none !important;
+        }
+
+        .request-video-popup-form .rv-error-msg.unsuccessful {
+            text-align: center;
+            font-size: 14px;
+            display: block !important;
         }
 
         .request-video-popup-form .popup-validation-msg.invalid {
@@ -197,13 +204,14 @@
 
         .request-video-popup .done-message-container {
             display: none;
-            width: 80%;
-            margin: 20px auto;
+            width: 100%;
+            padding: 10px;
         }
 
         .request-video-popup .done-message-container .done-message {
-            margin: 0 auto 20px;
-            font-size: 15px;
+            width: 90%;
+            margin: 30px auto;
+            font-size: 17px;
             text-align: center;
             color: #3a3d2c;
         }
@@ -318,14 +326,18 @@
 </head>
 
 <body>
+    <form id="product-form">
+        <input type="hidden" id="product-id" value="d6371ce9-baa4-4e35-9586-0c9d6976b297">
+    </form>
     <button id="product-view-add-to-cart">add</button>
     <div class="request-video-popup">
         <div class="popup-overlay"></div>
         <div class="request-video-popup-form">
             <button class="close-request-video-popup-icon">X</button>
-            <p class="request-video-title">اطلب فيديو</p>
-            <p class="request-video-desc">ادخل بياناتك لطلب فيديو للمنتج</p>
             <form>
+                <p class="request-video-title">اطلب فيديو</p>
+                <p class="request-video-desc">ادخل بياناتك لطلب فيديو للمنتج</p>
+                <p class="rv-error-msg"></p>
                 <div class="inp-wrapper">
                     <label for="whatsapp-username">الاسم</label>
                     <input type="text" id="whatsapp-username" name="name" placeholder="اسم المستخدم" required>
@@ -339,9 +351,8 @@
                 <button type="submit" class="submit-request-video-form">تأكيد</button>
             </form>
             <div class="done-message-container">
-                <p class="done-message">
-                    تم إستلام بياناتك بنجاح سنقوم بمراسلتك علي الواتساب.
-                </p>
+                <p class="request-video-title">تم طلب الفيديو بنجاح</p>
+                <p class="done-message"></p>
                 <button class="close-request-video-popup">متابعة التسوق</button>
             </div>
         </div>
@@ -349,7 +360,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/js/intlTelInput.min.js"></script>
     <script>
-        var RVAddToCartButton = document.querySelector("#product-view-add-to-cart");
+                var RV_ProductId = document.querySelector("#product-form #product-id").value;
+                var RV_addToCartButton = document.querySelector("#product-view-add-to-cart");
         function toggleRequestVideoPopup() {
             if (document.querySelector(".request-video-popup").classList.contains("is-active")) {
                 document.querySelector(".request-video-popup-form").classList.remove("fade-down");
@@ -358,11 +370,14 @@
                     document.querySelector(".request-video-popup").classList.remove("is-active");
                     document.querySelector(".request-video-popup-form form").classList.remove("hide");
                     document.querySelector(".request-video-popup-form form").reset();
+                    document.querySelector(".request-video-popup-form .done-message-container .done-message").innerHTML = '';
                     document.querySelector(".request-video-popup-form .done-message-container").classList.remove("show");
                     document.querySelectorAll(".request-video-popup-form .popup-validation-msg").forEach(function(msg){
                         msg.innerHTML = '';
                         msg.classList.remove('invalid');
                     });
+                    document.querySelector('.request-video-popup-form .rv-error-msg').classList.remove('unsuccessful');
+                    document.querySelector('.request-video-popup-form .rv-error-msg').innerHTML = '';
                     document.body.style.overflow = "initial";
                 }, 450);
             } else {
@@ -373,7 +388,7 @@
             }
         }
 
-        function productVideoRequest(submitBtn, url, data) {
+                function productVideoRequest(submitBtn, productId, data) {
             submitBtn.disabled = true;
             var options = {
                 method: "POST",
@@ -383,42 +398,57 @@
                 },
                 body: JSON.stringify(data),
             };
-            var fetchRes = fetch(url, options);
-            fetchRes
+                var RV_fetchRes = fetch('https://affiliate-emails.valphora.com/api/v1/products/' + productId + '/request-video', options);
+                RV_fetchRes
                 .then(function (res) {
                     return res.json();
                 })
                 .then(function (data) {
-                    if(data.status) {
+                    if (data.success) {
+                        document.querySelector('.request-video-popup-form .rv-error-msg').classList.remove('unsuccessful');
+                        document.querySelector('.request-video-popup-form .rv-error-msg').innerHTML = '';
                         document.querySelector(".request-video-popup-form form").classList.add("hide");
                         document.querySelector(".request-video-popup-form .done-message-container").classList.add("show");
+                        document.querySelector(".request-video-popup-form .done-message-container .done-message").innerHTML = data.message;
                     } else {
-                        throw Error(JSON.stringify(data.errors));
+                        if (data.errors) {
+                            throw Error(JSON.stringify(data.errors));
+                        } else {
+                            throw Error(JSON.stringify({ unsuccessful: data.message }));
+                        }
                     }
                 })
                 .catch(function (error) {
                     var errors = JSON.parse(error.message);
-                    var formFields = Array.from(document.querySelectorAll('.request-video-popup-form form [name]'));
-                    formFields.forEach(function (field) {
-                        if (errors[field.name]) {
-                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = errors[field.name][0];
-                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.add('invalid');
-                        } else {
-                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = '';
-                            field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.remove('invalid');
-                        }
-                    });
+                    if (errors.unsuccessful) {
+                        document.querySelector('.request-video-popup-form .rv-error-msg').innerHTML = errors.unsuccessful;
+                        document.querySelector('.request-video-popup-form .rv-error-msg').classList.add('unsuccessful');
+                    } else {
+                        var formFields = Array.from(document.querySelectorAll('.request-video-popup-form form [name]'));
+                        formFields.forEach(function (field) {
+                            if (errors[field.name]) {
+                                field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = errors[field.name][0];
+                                field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.add('invalid');
+                            } else {
+                                field.closest('.inp-wrapper').querySelector('.popup-validation-msg').innerHTML = '';
+                                field.closest('.inp-wrapper').querySelector('.popup-validation-msg').classList.remove('invalid');
+                            }
+                        });
+                        document.querySelector('.request-video-popup-form .rv-error-msg').classList.remove('unsuccessful');
+                        document.querySelector('.request-video-popup-form .rv-error-msg').innerHTML = '';
+                    }
+                        
                 })
                 .finally(function () {
                     submitBtn.disabled = false;
                 });
         }
 
-        if (RVAddToCartButton) {
-            var RVRequestVideoBtn = document.createElement("button");
-            RVRequestVideoBtn.classList.add("request-video-btn");
-            RVRequestVideoBtn.innerHTML = "اطلب فيديو";
-            RVAddToCartButton.after(RVRequestVideoBtn);
+                if (RV_addToCartButton) {
+                    var RV_requestVideoBtn = document.createElement("button");
+                    RV_requestVideoBtn.classList.add("request-video-btn");
+                    RV_requestVideoBtn.innerHTML = "اطلب فيديو";
+                    RV_addToCartButton.after(RV_requestVideoBtn);
 
             [
                 document.querySelector(".request-video-popup .close-request-video-popup-icon"),
@@ -431,23 +461,22 @@
                 });
             });
 
-            var RVWhatsappNumberInput = document.querySelector(".request-video-popup-form #whatsapp-number");
-            var RVWhatsappNumberIntlTelInput = window.intlTelInput(RVWhatsappNumberInput, {
+                var RV_whatsappNumberInput = document.querySelector(".request-video-popup-form #whatsapp-number");
+                var RV_whatsappNumberIntlTelInput = window.intlTelInput(RV_whatsappNumberInput, {
                 initialCountry: "sa",
                 preferredCountries: ['sa'],
                 separateDialCode: true,
                 utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/js/utils.min.js',
             });
 
-
             document.querySelector(".request-video-popup-form .submit-request-video-form").addEventListener("click", function (e) {
                 e.preventDefault();
-                var requestData = {
+                var RV_requestData = {
                     name: document.querySelector(".request-video-popup-form #whatsapp-username").value,
-                    phone: document.querySelector(".request-video-popup-form #whatsapp-number").value,
-                    product_id: 'test-product-id',
+                    phone: RV_whatsappNumberIntlTelInput.getNumber(),
+                    phone_country: RV_whatsappNumberIntlTelInput.getSelectedCountryData().iso2,
                 };
-                productVideoRequest(this, 'https://affiliate-emails.valphora.com/api/nafgold/request-video', requestData);
+                productVideoRequest(this, RV_ProductId, RV_requestData);
             });
         } else {
             document.querySelector(".request-video-popup").remove();
