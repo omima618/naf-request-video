@@ -328,7 +328,7 @@
 
 <body>
     <form id="product-form">
-        <input type="hidden" id="product-id" value="d6371ce9-baa4-4e35-9586-0c9d6976b297">
+        <input type="hidden" id="product-id" value="2696">
     </form>
     <button id="product-view-add-to-cart">add</button>
     <div class="request-video-popup">
@@ -361,8 +361,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.6/js/intlTelInput.min.js"></script>
     <script>
-                var RV_ProductId = document.querySelector("#product-form #product-id").value;
-                var RV_addToCartButton = document.querySelector("#product-view-add-to-cart");
+        var RV_addToCartButton = document.querySelector(".product-btns");
+        var RV_ProductId = RV_addToCartButton.querySelector(".add-to-cart").dataset.productId;
         function toggleRequestVideoPopup() {
             if (document.querySelector(".request-video-popup").classList.contains("is-active")) {
                 document.querySelector(".request-video-popup-form").classList.remove("fade-down");
@@ -389,7 +389,7 @@
             }
         }
 
-                function productVideoRequest(submitBtn, productId, data) {
+        function productVideoRequest(submitBtn, productId, data) {
             submitBtn.disabled = true;
             var options = {
                 method: "POST",
@@ -445,11 +445,11 @@
                 });
         }
 
-                if (RV_addToCartButton) {
-                    var RV_requestVideoBtn = document.createElement("button");
-                    RV_requestVideoBtn.classList.add("request-video-btn");
-                    RV_requestVideoBtn.innerHTML = "اطلب فيديو";
-                    RV_addToCartButton.after(RV_requestVideoBtn);
+        if (RV_addToCartButton) {
+            var RV_requestVideoBtn = document.createElement("button");
+            RV_requestVideoBtn.classList.add("request-video-btn");
+            RV_requestVideoBtn.innerHTML = "اطلب فيديو";
+            RV_addToCartButton.after(RV_requestVideoBtn);
 
             [
                 document.querySelector(".request-video-popup .close-request-video-popup-icon"),
